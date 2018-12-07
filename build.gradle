@@ -1,0 +1,64 @@
+plugins
+{
+	id 'java'
+	id 'application'
+	id 'com.github.alexeylisyutenko.windows-service-plugin' version '1.1.0'
+	id 'com.github.johnrengelman.shadow' version '4.0.3'
+	id 'edu.sc.seis.launch4j' version '2.4.4'
+}
+
+repositories 
+{
+    jcenter()
+}
+
+dependencies 
+{
+	compile 'org.eclipse.jetty:jetty-server:9.4.14.v20181114'
+	compile 'org.eclipse.jetty:jetty-servlet:9.4.14.v20181114'
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+}
+
+mainClassName = 'fr.nachidel.poc_windows_service.main.Launch'
+
+version = 'ALPHA-0'
+
+jar 
+{
+	manifest 
+	{
+        attributes 'Main-Class': 'com.foo.bar.MainClass'
+    }
+
+    from 
+    {
+		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+createExe.dependsOn shadowJar
+createWindowsService.dependsOn shadowJar
+
+windowsService 
+{
+	overridingClasspath = project.files(project.tasks.shadowJar.outputs)
+	architecture = 'amd64'
+	displayName = 'TestService'
+	description = 'Service generated with using gradle plugin'   
+	startClass = 'Launch'
+	startMethod = 'start'
+	stopClass = 'Launch'
+	stopMethod = 'stop'
+	startup = 'auto'
+}
+
+launch4j 
+{
+    outfile = project.name+'.exe'
+    mainClassName = project.mainClassName
+    copyConfigurable = project.tasks.shadowJar.outputs.files
+    jar = "lib/${project.tasks.shadowJar.archiveName}"
+    headerType = 'console'
+}
+
