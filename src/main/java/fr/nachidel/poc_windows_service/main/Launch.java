@@ -42,7 +42,7 @@ public class Launch
 							case "close":
 							case "exit":
 								RUN = false;
-								stop(null);
+								stop(new String[] {});
 								break;
 							}
 						}

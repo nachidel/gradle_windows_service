@@ -1,10 +1,11 @@
 plugins
 {
+	id 'eclipse'
 	id 'java'
 	id 'application'
-	id 'com.github.alexeylisyutenko.windows-service-plugin' version '1.1.0'
 	id 'com.github.johnrengelman.shadow' version '4.0.3'
 	id 'edu.sc.seis.launch4j' version '2.4.4'
+	id 'com.github.alexeylisyutenko.windows-service-plugin' version '1.1.0'
 }
 
 repositories 
@@ -28,7 +29,7 @@ jar
 {
 	manifest 
 	{
-        attributes 'Main-Class': 'com.foo.bar.MainClass'
+        attributes 'Main-Class': 'fr.nachidel.poc_windows_service.main.Launch'
     }
 
     from 
@@ -46,12 +47,15 @@ windowsService
 	architecture = 'amd64'
 	displayName = 'TestService'
 	description = 'Service generated with using gradle plugin'   
-	startClass = 'Launch'
+	startClass = mainClassName
 	startMethod = 'start'
-	stopClass = 'Launch'
+	stopClass = mainClassName
 	stopMethod = 'stop'
 	startup = 'auto'
+	logPath = "$buildDir/windows-service/logs"
 }
+
+
 
 launch4j 
 {
@@ -61,4 +65,3 @@ launch4j
     jar = "lib/${project.tasks.shadowJar.archiveName}"
     headerType = 'console'
 }
-
